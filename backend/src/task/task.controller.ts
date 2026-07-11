@@ -8,7 +8,7 @@ export class TaskController {
     constructor(private readonly taskService: TaskService) { }
 
     @Get()
-    async getAllTasks(){
+    async getAllTasks() {
         return this.taskService.getAllTasks()
     }
 
@@ -21,7 +21,7 @@ export class TaskController {
     async getTaskById(@Param('id', ParseIntPipe) id: string) {
         const taskFound = await this.taskService.getTaskById(Number(id))
         if (!taskFound) throw new NotFoundException('Task does not exist')
-            return taskFound
+        return taskFound
     }
 
     @Delete(':id')

@@ -1,9 +1,21 @@
-import { Module } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
+import { Global, Module } from '@nestjs/common';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '@prisma/client';
 
+@Global()
 @Module({
-  providers: [PrismaService],
-  exports: [PrismaService],
-})
+    providers: [
+        {
+            provide: PrismaClient,
+            useFactory: () => {
+                const adapter = new PrismaPg({
+                    connectionString: process.env.DATABASE_URL!,
+                });
 
-export class PrismaModule {}
+                return new PrismaClient({ adapter });
+            },
+        },
+    ],
+    exports: [PrismaClient],
+})
+export class PrismaModule { }

@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma, Task } from '@prisma/client';
+import { 
+    Prisma, 
+    PrismaClient, 
+    Task 
+} from '@prisma/client';
 
 @Injectable()
 export class TaskService {
-    constructor(private prisma: PrismaService) { }
+    constructor(private prisma: PrismaClient) { }
 
     async getAllTasks(): Promise<Task[]> {
         return this.prisma.task.findMany();
