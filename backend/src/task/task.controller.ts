@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { TaskService } from './task.service';
-import type { Prisma } from '@prisma/client';
+import { type ITaskRequest } from './types/types';
 
 @Controller("tasks")
 export class TaskController {
@@ -14,7 +14,7 @@ export class TaskController {
 
     @Post()
     async createTask(
-        @Body() data: Prisma.TaskCreateInput
+        @Body() data: ITaskRequest
     ) {
         return this.taskService.createTask(data)
     }
@@ -42,7 +42,7 @@ export class TaskController {
     @Put(':id')
     async updateTask(
         @Param('id', ParseIntPipe) id: string, 
-        @Body() data: Prisma.TaskUpdateInput
+        @Body() data: ITaskRequest
     ) {
         try {
             return await this.taskService.updateTask(Number(id), data)

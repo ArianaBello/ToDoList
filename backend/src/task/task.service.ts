@@ -1,34 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { 
-    Prisma, 
-    PrismaClient, 
-    Task 
+import {
+    Prisma,
+    PrismaClient,
+    Task
 } from '@prisma/client';
+
+import { type ITaskRequest } from './types/types';
 
 @Injectable()
 export class TaskService {
     constructor(private prisma: PrismaClient) { }
-
-    private normalizeDateField(date?: Prisma.TaskCreateInput['date'] | Prisma.TaskUpdateInput['date']) {
-        if (!date) return undefined;
-
-        if (typeof date === 'string') {
-            return new Date(date);
-        }
-
-        if (date instanceof Date) {
-            return date;
-        }
-
-        if (typeof date === 'object' && 'set' in date && typeof date.set === 'string') {
-            return {
-                ...date,
-                set: new Date(date.set),
-            };
-        }
-
-        return date;
-    }
 
     async getAllTasks(): Promise<Task[]> {
         return this.prisma.task.findMany();
@@ -40,25 +21,27 @@ export class TaskService {
         });
     }
 
-    async createTask(data: Prisma.TaskCreateInput): Promise<Task> {
-        const normalizedDate = this.normalizeDateField(data.date) as string | Date;
+    async createTask(data: ITaskRequest): Promise<Task> {
+        const date = new Date(data.date);
 
         return this.prisma.task.create({
             data: {
-                ...data,
-                date: normalizedDate,
+                name: data.name,
+                description: data.description,
+                date: date ?? new Date(),
             },
         });
     }
 
-    async updateTask(id: number, data: Prisma.TaskUpdateInput): Promise<Task> {
-        const normalizedDate = this.normalizeDateField(data.date);
+    async updateTask(id: number, data: ITaskRequest): Promise<Task> {
+        const date = new Date(data.date);
 
         return this.prisma.task.update({
             where: { id },
             data: {
-                ...data,
-                ...(normalizedDate !== undefined ? { date: normalizedDate } : {}),
+                name: data.name,
+                description: data.description,
+                date: date ?? new Date(),
             },
         });
     }
@@ -67,7 +50,7 @@ export class TaskService {
         return this.prisma.task.delete({
             where: {
                 id
-            }
+            },
         });
     }
 
