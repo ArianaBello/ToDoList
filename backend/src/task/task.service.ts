@@ -5,7 +5,7 @@ import {
     Task
 } from '@prisma/client';
 
-import { type ITaskRequest } from './types/types';
+import { ITaskResponse, type ITaskRequest } from './types/types';
 
 @Injectable()
 export class TaskService {
@@ -15,11 +15,20 @@ export class TaskService {
         return this.prisma.task.findMany();
     }
 
-    async getTaskById(id: number): Promise<Task | null> {
-        return this.prisma.task.findUnique({
+    async getTaskById(id: number): Promise<ITaskResponse | null> {
+        const task = await this.prisma.task.findUnique({
             where: { id },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                date: true
+            }
         });
+
+        return task as ITaskResponse;
     }
+
 
     async createTask(data: ITaskRequest): Promise<Task> {
         const date = new Date(data.date);
