@@ -42,6 +42,7 @@ export class TaskService {
                 name: data.name,
                 description: data.description,
                 date: date ?? new Date(),
+                updatedAt: new Date(),
             },
         });
     }
