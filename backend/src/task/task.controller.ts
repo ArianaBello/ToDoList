@@ -13,19 +13,25 @@ export class TaskController {
     }
 
     @Post()
-    async createTask(@Body() data: Prisma.TaskCreateInput) {
+    async createTask(
+        @Body() data: Prisma.TaskCreateInput
+    ) {
         return this.taskService.createTask(data)
     }
 
     @Get(':id')
-    async getTaskById(@Param('id', ParseIntPipe) id: string) {
+    async getTaskById(
+        @Param('id', ParseIntPipe) id: string
+    ) {
         const taskFound = await this.taskService.getTaskById(Number(id))
         if (!taskFound) throw new NotFoundException('Task does not exist')
         return taskFound
     }
 
     @Delete(':id')
-    async deleteTask(@Param('id', ParseIntPipe) id: string) {
+    async deleteTask(
+        @Param('id', ParseIntPipe) id: string
+    ) {
         try {
             return await this.taskService.deleteTask(Number(id))
         } catch (error) {
@@ -34,7 +40,10 @@ export class TaskController {
     }
 
     @Put(':id')
-    async updateTask(@Param('id', ParseIntPipe) id: string, @Body() data: Prisma.TaskUpdateInput) {
+    async updateTask(
+        @Param('id', ParseIntPipe) id: string, 
+        @Body() data: Prisma.TaskUpdateInput
+    ) {
         try {
             return await this.taskService.updateTask(Number(id), data)
         } catch (error) {
