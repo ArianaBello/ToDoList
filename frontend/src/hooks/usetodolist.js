@@ -94,7 +94,8 @@ export default function useToDoList() {
         saveEdit,
         cancelEdit,
         deleteTask,
-        toggleTaskCompletion
+        toggleTaskCompletion,
+        localToday
     }
 }
 

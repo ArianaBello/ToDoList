@@ -18,12 +18,10 @@ export default function ToDoList() {
         saveEdit,
         cancelEdit,
         deleteTask,
-        toggleTaskCompletion
+        toggleTaskCompletion,
+        localToday
     } = useToDoList();
 
-    const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .split("T")[0];
     const isDateValid = newDate === "" || newDate >= localToday;
 
     return (
