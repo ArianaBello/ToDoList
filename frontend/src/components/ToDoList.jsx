@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import useToDoList from "../hooks/usetodolist"
 import '../index.css'
 import { EditIcon, TrashIcon } from "../shared/icons/trash"
@@ -19,8 +20,13 @@ export default function ToDoList() {
         cancelEdit,
         deleteTask,
         toggleTaskCompletion,
-        localToday
+        localToday,
+        getAllTasks,
     } = useToDoList();
+
+    useEffect(() => {
+        getAllTasks();
+    }, []);
 
     const isDateValid = newDate === "" || newDate >= localToday;
 
@@ -75,17 +81,17 @@ export default function ToDoList() {
                             <div className="flex items-center mb-2">
                                 <input type="checkbox"
                                     checked={task.completed}
-                                    onChange={() => toggleTaskCompletion(task.id)}
+                                    onChange={() => toggleTaskCompletion(task.id, !task.completed)}
                                     className="mr-2 accent-pink-500 focus:ring-pink-500"
                                 />
                                 <span className="font-medium">{task.name}</span>
                             </div>
                             <p className="text-sm text-black">{task.description}</p>
-                            <p className="text-xs text-black mt-1"> Fecha: <time dateTime={task.dueDate}>{task.dueDate}</time></p>
+                            <p className="text-xs text-black mt-1"> Fecha: <time dateTime={task.date}>{task.date}</time></p>
                         </div>
                         <div className="flex items-center gap-2 ml-3">
                             <EditIcon
-                                onClick={() => editTask(task)}
+                                onClick={() => editTask(task.id)}
                                 width={20}
                                 height={20}
                                 fill="currentColor"

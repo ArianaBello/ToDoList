@@ -50,4 +50,16 @@ export class TaskController {
             throw new NotFoundException('Task does not exist')
         }
     }
+
+    @Put('completed/:id')
+    async toggleTaskCompletion(
+        @Param('id', ParseIntPipe) id: string,
+        @Body('completed') completed: boolean
+    ){
+        try {
+            return await this.taskService.toggleTaskCompletion(Number(id), completed)
+        } catch (error) {
+            throw new NotFoundException('Task does not exist')
+        }
+    }
 }       

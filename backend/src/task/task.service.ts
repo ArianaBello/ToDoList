@@ -12,7 +12,11 @@ export class TaskService {
     constructor(private prisma: PrismaClient) { }
 
     async getAllTasks(): Promise<Task[]> {
-        return this.prisma.task.findMany();
+        return this.prisma.task.findMany({
+            orderBy: {
+                id: 'asc',
+            },
+        });
     }
 
     async getTaskById(id: number): Promise<ITaskResponse | null> {
@@ -51,6 +55,16 @@ export class TaskService {
                 name: data.name,
                 description: data.description,
                 date: date ?? new Date(),
+                updatedAt: new Date(),
+            },
+        });
+    }
+
+    async toggleTaskCompletion(id: number, completed: boolean): Promise<Task> {
+        return this.prisma.task.update({
+            where: { id },
+            data: {
+                completed,
                 updatedAt: new Date(),
             },
         });
