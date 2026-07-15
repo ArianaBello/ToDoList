@@ -12,12 +12,19 @@ datasource db {
 }
 
 model Task {
-  id          Int      @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   name        String
   description String?
   date        DateTime
-  completed   Boolean  @default(false)
+  completed   Boolean      @default(false)
+  priority    PriorityEnum @default(LOW)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
+
+enum PriorityEnum {
+  LOW
+  MEDIUM
+  HIGH
 }

@@ -7,6 +7,7 @@ export default function useToDoList() {
     const [newDescription, setNewDescription] = useState("");
     const [newDate, setNewDate] = useState("");
     const [editingTaskId, setEditingTaskId] = useState(null);
+    const [newPriority, setNewPriority] = useState("");
 
     const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
@@ -17,6 +18,7 @@ export default function useToDoList() {
         setNewDescription("");
         setNewDate("");
         setEditingTaskId(null);
+        setNewPriority("");
     }
 
     const getAllTasks = async () => {
@@ -38,13 +40,14 @@ export default function useToDoList() {
         const trimmedTask = newTask.trim();
         const trimmedDescription = newDescription.trim();
 
-        if (trimmedTask === "" || trimmedDescription === "" || newDate === "" || newDate < localToday) return;
+        if (trimmedTask === "" || trimmedDescription === "" || newDate === "" || newDate < localToday || newPriority === "") return;
 
         const model = {
             name: trimmedTask,
             description: trimmedDescription,
             date: newDate,
-            completed: false
+            completed: false,
+            priority: newPriority,
         }
 
         await saveTask(model);
@@ -85,19 +88,21 @@ export default function useToDoList() {
         setNewTask(response.name);
         setNewDescription(response.description);
         setNewDate(response.date);
+        setNewPriority(response.priority);
     }
 
     const saveEdit = async () => {
         const trimmedTask = newTask.trim();
         const trimmedDescription = newDescription.trim();
 
-        if (!editingTaskId || trimmedTask === "" || trimmedDescription === "" || newDate === "" || newDate < localToday) return;
+        if (!editingTaskId || trimmedTask === "" || trimmedDescription === "" || newDate === "" || newDate < localToday || newPriority === "") return;
 
         const model = {
             name: trimmedTask,
             description: trimmedDescription,
             date: newDate,
-            completed: false
+            completed: false,
+            priority: newPriority,
         }
 
         await updateTask(editingTaskId, model);
@@ -143,6 +148,18 @@ export default function useToDoList() {
         return response.json();
     }
 
+    const priorityTask = async (id, priority) => {
+        const response = await fetch(`http://localhost:3000/tasks/priority/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ priority})
+        });
+        await getAllTasks();
+        return response.json();
+    }
+
     return {
         task,
         newTask,
@@ -161,6 +178,7 @@ export default function useToDoList() {
         toggleTaskCompletion,
         localToday,
         getAllTasks,
+        priorityTask,
     }
 }
 

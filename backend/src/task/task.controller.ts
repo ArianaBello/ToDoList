@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { type ITaskRequest } from './types/types';
+import { PriorityEnum, type ITaskRequest } from './types/types';
 
 @Controller("tasks")
 export class TaskController {
@@ -58,6 +58,18 @@ export class TaskController {
     ){
         try {
             return await this.taskService.toggleTaskCompletion(Number(id), completed)
+        } catch (error) {
+            throw new NotFoundException('Task does not exist')
+        }
+    }
+
+    @Put('priority/:id')
+    async updateTaskPriority(
+        @Param('id', ParseIntPipe) id: string,
+        @Body('priority') priority: PriorityEnum
+    ){
+        try {
+            return await this.taskService.updateTaskPriority(Number(id), priority)
         } catch (error) {
             throw new NotFoundException('Task does not exist')
         }

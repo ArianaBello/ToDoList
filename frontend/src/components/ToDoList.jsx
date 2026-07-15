@@ -22,6 +22,9 @@ export default function ToDoList() {
         toggleTaskCompletion,
         localToday,
         getAllTasks,
+        newPriority,
+        setNewPriority,
+        priorityTask,
     } = useToDoList();
 
     useEffect(() => {
@@ -32,7 +35,7 @@ export default function ToDoList() {
 
     return (
         <div className="max-w-md mx-auto mt-10 p-4 bg-white shadow-md rounded-lg">
-            <h1 className="text-2xl font-bold mb-4"> ToDoList </h1>
+            <h1 className="text-center text-2xl font-bold mb-4"> ToDoList </h1>
             <div className="mb-4 space-y-3">
                 <input
                     type="text"
@@ -53,6 +56,13 @@ export default function ToDoList() {
                     value={newDate}
                     min={localToday}
                     onChange={(e) => setNewDate(e.target.value)}
+                    className="w-full p-2 border accent-pink-500 border-pink-300 rounded-lg focus:outline-none"
+                />
+                <input
+                    type="text"
+                    value={newPriority}
+                    placeholder="Priority"
+                    onChange={(e) => setNewPriority(e.target.value)}
                     className="w-full p-2 border accent-pink-500 border-pink-300 rounded-lg focus:outline-none"
                 />
                 <div className="flex gap-2">
