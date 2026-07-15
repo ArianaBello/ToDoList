@@ -7,7 +7,7 @@ export default function useToDoList() {
     const [newDescription, setNewDescription] = useState("");
     const [newDate, setNewDate] = useState("");
     const [editingTaskId, setEditingTaskId] = useState(null);
-    const [newPriority, setNewPriority] = useState("");
+    const [newPriority, setNewPriority] = useState("LOW");
 
     const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
@@ -18,7 +18,7 @@ export default function useToDoList() {
         setNewDescription("");
         setNewDate("");
         setEditingTaskId(null);
-        setNewPriority("");
+        setNewPriority("LOW");
     }
 
     const getAllTasks = async () => {
@@ -33,21 +33,25 @@ export default function useToDoList() {
         );
 
         const tasks = await response.json();
-        setTask(tasks);
+        const normalizedTasks = tasks.map((task) => ({
+            ...task,
+            priority: task.priority ? String(task.priority).toUpperCase() : "LOW",
+        }));
+        setTask(normalizedTasks);
     }
 
     const createTask = async () => {
         const trimmedTask = newTask.trim();
         const trimmedDescription = newDescription.trim();
 
-        if (trimmedTask === "" || trimmedDescription === "" || newDate === "" || newDate < localToday || newPriority === "") return;
+        if (trimmedTask === "" || trimmedDescription === "" || newDate === "" || newDate < localToday) return;
 
         const model = {
             name: trimmedTask,
             description: trimmedDescription,
             date: newDate,
             completed: false,
-            priority: newPriority,
+            priority: String(newPriority || "LOW").toUpperCase(),
         }
 
         await saveTask(model);
@@ -88,21 +92,21 @@ export default function useToDoList() {
         setNewTask(response.name);
         setNewDescription(response.description);
         setNewDate(response.date);
-        setNewPriority(response.priority);
+        setNewPriority(response.priority ? String(response.priority).toUpperCase() : "LOW");
     }
 
     const saveEdit = async () => {
         const trimmedTask = newTask.trim();
         const trimmedDescription = newDescription.trim();
 
-        if (!editingTaskId || trimmedTask === "" || trimmedDescription === "" || newDate === "" || newDate < localToday || newPriority === "") return;
+        if (!editingTaskId || trimmedTask === "" || trimmedDescription === "" || newDate === "" || newDate < localToday) return;
 
         const model = {
             name: trimmedTask,
             description: trimmedDescription,
             date: newDate,
             completed: false,
-            priority: newPriority,
+            priority: String(newPriority || "LOW").toUpperCase(),
         }
 
         await updateTask(editingTaskId, model);
@@ -179,6 +183,8 @@ export default function useToDoList() {
         localToday,
         getAllTasks,
         priorityTask,
+        newPriority,
+        setNewPriority,
     }
 }
 

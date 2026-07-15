@@ -36,6 +36,7 @@ export class TaskService {
 
     async createTask(data: ITaskRequest): Promise<Task> {
         const date = new Date(data.date);
+        console.log("priority: ", data.priority);
 
         return this.prisma.task.create({
             data: {
@@ -49,6 +50,7 @@ export class TaskService {
 
     async updateTask(id: number, data: ITaskRequest): Promise<Task> {
         const date = new Date(data.date);
+        console.log("priority update: ", data.priority);
 
         return this.prisma.task.update({
             where: { id },
