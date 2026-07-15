@@ -2,6 +2,19 @@ import { useEffect } from "react";
 import useToDoList from "../hooks/usetodolist"
 import '../index.css'
 import { EditIcon, TrashIcon } from "../shared/icons/trash"
+import Select from "./Select"
+
+const PRIORITY_OPTIONS = [
+    { value: 'LOW', label: 'Low Priority' },
+    { value: 'MEDIUM', label: 'Medium Priority' },
+    { value: 'HIGH', label: 'High Priority' },
+];
+
+const PRIORITY_COLORS = {
+    LOW: 'bg-green-100 text-green-800 border border-green-300',
+    MEDIUM: 'bg-yellow-100 text-yellow-800 border border-yellow-300',
+    HIGH: 'bg-red-200 text-red-800 border border-red-300',
+};
 
 export default function ToDoList() {
 
@@ -22,6 +35,9 @@ export default function ToDoList() {
         toggleTaskCompletion,
         localToday,
         getAllTasks,
+        newPriority,
+        setNewPriority,
+        priorityTask,
     } = useToDoList();
 
     useEffect(() => {
@@ -32,7 +48,7 @@ export default function ToDoList() {
 
     return (
         <div className="max-w-md mx-auto mt-10 p-4 bg-white shadow-md rounded-lg">
-            <h1 className="text-2xl font-bold mb-4"> ToDoList </h1>
+            <h1 className="text-center text-2xl font-bold mb-4"> ToDoList </h1>
             <div className="mb-4 space-y-3">
                 <input
                     type="text"
@@ -55,6 +71,21 @@ export default function ToDoList() {
                     onChange={(e) => setNewDate(e.target.value)}
                     className="w-full p-2 border accent-pink-500 border-pink-300 rounded-lg focus:outline-none"
                 />
+                <div>
+                    <Select
+                        label="Priority"
+                        value={newPriority}
+                        onChange={(e) => setNewPriority(e.target.value)}
+                        options={PRIORITY_OPTIONS}
+                        placeholder="Select priority level"
+                        showPlaceholder={false}
+                    />
+                    {newPriority && (
+                        <div className={`mt-2 inline-block px-3 py-1 rounded-full text-sm font-medium ${PRIORITY_COLORS[newPriority]}`}>
+                            {PRIORITY_OPTIONS.find(opt => opt.value === newPriority)?.label}
+                        </div>
+                    )}
+                </div>
                 <div className="flex gap-2">
                     <button
                         className="flex-1 p-2 bg-pink-400 text-white rounded-lg hover:bg-pink-500 disabled:opacity-50"
@@ -88,6 +119,11 @@ export default function ToDoList() {
                             </div>
                             <p className="text-sm text-black">{task.description}</p>
                             <p className="text-xs text-black mt-1"> Fecha: <time dateTime={task.date}>{task.date}</time></p>
+                            {task.priority && (
+                                <div className={`mt-2 inline-block px-2 py-1 rounded-full text-xs font-medium ${PRIORITY_COLORS[String(task.priority).toUpperCase()] || ''}`}>
+                                    {PRIORITY_OPTIONS.find(opt => opt.value === String(task.priority).toUpperCase())?.label || task.priority}
+                                </div>
+                            )}
                         </div>
                         <div className="flex items-center gap-2 ml-3">
                             <EditIcon

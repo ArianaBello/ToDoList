@@ -5,7 +5,7 @@ import {
     Task
 } from '@prisma/client';
 
-import { ITaskResponse, type ITaskRequest } from './types/types';
+import { ITaskResponse, PriorityEnum, type ITaskRequest } from './types/types';
 
 @Injectable()
 export class TaskService {
@@ -36,18 +36,21 @@ export class TaskService {
 
     async createTask(data: ITaskRequest): Promise<Task> {
         const date = new Date(data.date);
+        console.log("priority: ", data.priority);
 
         return this.prisma.task.create({
             data: {
                 name: data.name,
                 description: data.description,
                 date: date ?? new Date(),
+                priority: data.priority ?? "",
             },
         });
     }
 
     async updateTask(id: number, data: ITaskRequest): Promise<Task> {
         const date = new Date(data.date);
+        console.log("priority update: ", data.priority);
 
         return this.prisma.task.update({
             where: { id },
@@ -56,6 +59,7 @@ export class TaskService {
                 description: data.description,
                 date: date ?? new Date(),
                 updatedAt: new Date(),
+                priority: data.priority ?? "",
             },
         });
     }
@@ -65,6 +69,16 @@ export class TaskService {
             where: { id },
             data: {
                 completed,
+                updatedAt: new Date(),
+            },
+        });
+    }
+
+    async updateTaskPriority(id: number, priority: PriorityEnum): Promise<Task> {
+        return this.prisma.task.update({
+            where: { id },
+            data: {
+                priority,
                 updatedAt: new Date(),
             },
         });
