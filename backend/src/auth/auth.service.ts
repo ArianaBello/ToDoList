@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import type { LoginDto } from './dto/login.dto';
 import { PrismaClient } from '@prisma/client';
 import { RegisterDto } from './dto/register.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,13 @@ export class AuthService {
                 email: foundUser.email,
             });
         }
+        const isPasswordValid = await bcrypt.compare(user.password, foundUser.password);
+        if (!isPasswordValid) throw new HttpException('user.auth.invalid_user_auth', HttpStatus.NOT_FOUND);
+        
+        const { password: _password, ...userWithoutPassword } = foundUser;
+        return {
+            token: this.jwtService.sign(userWithoutPassword),
+        }
     }
 
     async handlerRegister(user: RegisterDto) {
@@ -33,15 +41,16 @@ export class AuthService {
 
         if (foundUser) throw new HttpException('user existing in the system', HttpStatus.NOT_FOUND);
 
-        const _password = user.password;
+        const hashedPassword: string = await bcrypt.hash(user.password, 10); // 
 
         const response = await this.prisma.user.create({
             data: {
                 name: user.name,
                 email: user.email,
-                password: _password,
+                password: hashedPassword,
             }
         });
+
 
         const validated = await this.validateUser({
             email: response.email,
