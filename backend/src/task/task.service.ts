@@ -13,6 +13,13 @@ export class TaskService {
 
     async getAllTasks(): Promise<Task[]> {
         return this.prisma.task.findMany({
+            include: {
+                user: {
+                    select: {
+                        name: true
+                    }
+                }
+            },
             orderBy: {
                 id: 'asc',
             },
@@ -44,6 +51,9 @@ export class TaskService {
                 description: data.description,
                 date: date ?? new Date(),
                 priority: data.priority ?? "",
+                user: {
+                    connect: { id: data.userId },
+                },
             },
         });
     }

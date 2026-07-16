@@ -4,6 +4,7 @@ export interface ITaskRequest {
     description: string,
     date: string | Date,
     priority: PriorityEnum,
+    userId: number,
 }
 
 export enum PriorityEnum {
