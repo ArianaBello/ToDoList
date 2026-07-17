@@ -1,6 +1,8 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { PriorityEnum, type ITaskRequest } from './types/types';
+import { TypeUser } from 'src/auth/decorators/general';
+import type { UserCognitoI } from 'src/auth/decorators/types';
 
 @Controller("tasks")
 export class TaskController {
@@ -14,9 +16,10 @@ export class TaskController {
 
     @Post()
     async createTask(
-        @Body() data: ITaskRequest
+        @Body() data: ITaskRequest,
+        @TypeUser() user: UserCognitoI,
     ) {
-        return this.taskService.createTask(data)
+        return this.taskService.createTask(data, user)
     }
 
     @Get(':id')
@@ -41,7 +44,7 @@ export class TaskController {
 
     @Put(':id')
     async updateTask(
-        @Param('id', ParseIntPipe) id: string, 
+        @Param('id', ParseIntPipe) id: string,
         @Body() data: ITaskRequest
     ) {
         try {
@@ -55,7 +58,7 @@ export class TaskController {
     async toggleTaskCompletion(
         @Param('id', ParseIntPipe) id: string,
         @Body('completed') completed: boolean
-    ){
+    ) {
         try {
             return await this.taskService.toggleTaskCompletion(Number(id), completed)
         } catch (error) {
@@ -67,7 +70,7 @@ export class TaskController {
     async updateTaskPriority(
         @Param('id', ParseIntPipe) id: string,
         @Body('priority') priority: PriorityEnum
-    ){
+    ) {
         try {
             return await this.taskService.updateTaskPriority(Number(id), priority)
         } catch (error) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import {
     Prisma,
     PrismaClient,
@@ -6,6 +6,7 @@ import {
 } from '@prisma/client';
 
 import { ITaskResponse, PriorityEnum, type ITaskRequest } from './types/types';
+import { UserCognitoI } from 'src/auth/decorators/types';
 
 @Injectable()
 export class TaskService {
@@ -41,26 +42,27 @@ export class TaskService {
     }
 
 
-    async createTask(data: ITaskRequest): Promise<Task> {
+    async createTask(data: ITaskRequest,  user: UserCognitoI): Promise<Task> {
         const date = new Date(data.date);
-        console.log("priority: ", data.priority);
+
+        const userId = user.userId;
+        if (!userId) {
+            throw new BadRequestException('User id is required to create a task');
+        }
 
         return this.prisma.task.create({
             data: {
                 name: data.name,
                 description: data.description,
                 date: date ?? new Date(),
-                priority: data.priority ?? "",
-                user: {
-                    connect: { id: data.userId },
-                },
+                priority: data.priority ?? PriorityEnum.LOW,
+                userId: userId
             },
         });
     }
 
     async updateTask(id: number, data: ITaskRequest): Promise<Task> {
         const date = new Date(data.date);
-        console.log("priority update: ", data.priority);
 
         return this.prisma.task.update({
             where: { id },
